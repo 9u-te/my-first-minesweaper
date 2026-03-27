@@ -704,8 +704,8 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " GAMBLEGAMBLEGAMBLEGAMBLE" << std::endl << std::endl;
                     changed = true;
-                    return changed;
                     Sleep(500);
+                    return changed;
                 }
             }
         }
@@ -738,10 +738,12 @@ void playergame(){
         if(game.was_exploded()){
             running = false;
             result = false;
+            break;
         }
         if(game.was_cleared()){
             running = false;
-            result = true; 
+            result = true;
+            break;
         }
         game.display();
     }
