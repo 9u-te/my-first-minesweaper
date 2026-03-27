@@ -13,22 +13,20 @@ class minesweaper{
         int size;
         int mine_num;
         int frag_num;
-    private:
-        double mine_ratio;
-    public:
         const int mine;
         const int frag;
         const int cover;
+        std::vector<std::vector<int>> display_board;
     private:
+        double mine_ratio;
         std::vector<std::vector<bool>> mine_board;
         std::vector<std::vector<bool>> cover_board;
         std::vector<std::vector<bool>> frag_board;
         std::vector<std::vector<int>> num_board;
-    public:
-        std::vector<std::vector<int>> display_board;
 
+    public:
         minesweaper():
-            size(10),//ゲームボードサイズ
+            size(20),//ゲームボードサイズ
             mine_ratio(0.15),//地雷の割合
             cover(10),//
             frag(11),
@@ -43,10 +41,37 @@ class minesweaper{
             frag_num = mine_num;
         }
 
+        void mine_display(){//はじめに地雷の位置公開！！
+            std::cout << frag_num << "/" <<  mine_num << std::endl;
+            
+            //列番号
+            std::cout << "x\\y";
+            for(int i = 0; i < size; i++){
+                std::cout << (i < 10 ? "|" : "") << i << '|';
+            }
+            std::cout << std::endl;
+
+            for(int i = 0; i < size; i++){
+                //行番号
+                std::cout << (i < 10 ? "  " : " ") << i;
+                
+                //メイン
+                for(int j = 0; j < size; j++){
+                    if(mine_board[i][j]){
+                        std::cout << '|' << 'M' << '|';
+                    }
+                    else{
+                        std::cout << ' ' << '-' <<  ' ';
+                    }
+                }
+                std::cout << std::endl;
+            }
+
+        }
 
 
     
-        bool hanni(int x, int y){
+        bool hanni(int x, int y){//範囲確認
             return 0 <= x && x < size && 0 <= y && y < size;
         }
 
@@ -58,10 +83,10 @@ class minesweaper{
             //いったん周りの9マスに地雷を設置
             mine_board[x][y] = true;
             for(int i = 0; i < 8; i++){
-                int nx = x+dxs[i] ;
-                int ny = y+dys[i] ;
-                if(hanni(nx, ny)){
-                mine_board[nx][ny] = true;
+                int mx = x+dxs[i] ;
+                int my = y+dys[i] ;
+                if(hanni(mx, my)){
+                mine_board[mx][my] = true;
                 }
             }
              
@@ -90,8 +115,8 @@ class minesweaper{
             //周りの地雷を消す
             mine_board[x][y] = false;
             for(int i = 0; i < 8; i++){
-                int nx = x+dxs[i] ;
-                int ny = y+dys[i] ;
+                int nx = x + dxs[i] ;
+                int ny = y + dys[i] ;
                 if(hanni(nx, ny)){
                 mine_board[nx][ny] = false;
                 }
@@ -102,8 +127,8 @@ class minesweaper{
                 for(int j = 0; j < size; j++){
                     if(mine_board[i][j]){
                         for(int k = 0; k < 8; k++){
-                            int X = i+dxs[k];
-                            int Y = j+dys[k];
+                            int X = i + dxs[k];
+                            int Y = j + dys[k];
                             if(hanni(X, Y)){
                                 num_board[X][Y]++;
                             }
@@ -122,45 +147,39 @@ class minesweaper{
         //開ける
         void openfunc(int open_x, int open_y){
             if(hanni(open_x, open_y)){
-                if(cover_board[open_x][open_y] && !frag_board[open_x][open_y]){
+                if(cover_board[open_x][open_y] && !frag_board[open_x][open_y]){//カバーがあるがフラグがない場合
                     cover_board[open_x][open_y] = false;
                     chainfunc(open_x, open_y);
                 } 
-                else{
-                    int num = num_board[open_x][open_y]; 
-                }
-
+                
                 //あしすと
                 int around_frag_num = 0;
-                for(int i = 0; i < 8; i++){
+                for(int i = 0; i < 8; i++){//周りのフラグの数を数える
                     int mx = open_x + dxs[i];
                     int my = open_y + dys[i];
                     if(hanni(mx, my) && frag_board[mx][my]){
                         around_frag_num++;
                     }
                 }
-                if(around_frag_num == num_board[open_x][open_y]){
+
+                if(around_frag_num == num_board[open_x][open_y]){//開けるところの数字と周りのフラグが同じ数字ならフラグのないカバーを開ける
                     for(int i = 0; i < 8; i++){
                          int nx = open_x + dxs[i];
                          int ny = open_y + dys[i];
 
-                        if(hanni(nx, ny)){
-                            if(cover_board[nx][ny] && !frag_board[nx][ny]){
-                                cover_board[nx][ny] = false;
-                                chainfunc(nx, ny);
-                            }
+                        if(hanni(nx, ny) && cover_board[nx][ny] && !frag_board[nx][ny]){
+                            cover_board[nx][ny] = false;
+                            chainfunc(nx, ny);
                         }
                     }
                 }
-            }
-            
-            
+            }            
         }
 
 
 
         //frag
-        void fragfunc(int frag_x, int frag_y){
+        void fragfunc(int frag_x, int frag_y){//フラグを置く
             if(hanni(frag_x, frag_y)){
                 if(frag_board[frag_x][frag_y]){
                     frag_board[frag_x][frag_y] = false;
@@ -175,7 +194,7 @@ class minesweaper{
 
 
     public:
-        void actionfunc(int action_x, int action_y, int action){
+        void actionfunc(int action_x, int action_y, int action){//
             switch(action){
                 case 0:
                     openfunc(action_x, action_y);
@@ -201,7 +220,7 @@ class minesweaper{
                     if(hanni(X, Y)){
                         if(cover_board[X][Y]){
                             cover_board[X][Y] = false;
-                            chainfunc(X, Y);
+                            chainfunc(X, Y);//また0のマスが出てきたらまたchainfunc
                         }
                     }
                 } 
@@ -212,7 +231,7 @@ class minesweaper{
 
     public:
         //地雷のマスが開いていないかどうか
-        bool was_exploded(){
+        bool is_exploded(){
             for(int i = 0; i < size; i++){
                 for(int j = 0; j < size; j++){
                     if(!cover_board[i][j] && mine_board[i][j]){
@@ -222,8 +241,9 @@ class minesweaper{
             }
             return false;
         }
+
         //クリアしたかどうか
-        bool was_cleared(){
+        bool is_cleared(){
             int covers = 0;
             for(int i = 0; i < size; i++){
                 for(int j = 0; j < size; j++){
@@ -245,7 +265,7 @@ class minesweaper{
         void display_board_func(){
             for(int i = 0; i < size; i++){
                 for(int j = 0; j < size; j++){
-                    if(cover_board[i][j]){
+                    if(cover_board[i][j]){//カバーがあればカバーかフラグ
                         if(frag_board[i][j]){
                             display_board[i][j] = frag;
                         }
@@ -262,6 +282,7 @@ class minesweaper{
                 }
             }
 
+            //フラグの総数
             frag_num = 0;
             for(int i = 0; i < size; i++){
                 for(int j = 0; j < size; j++){
@@ -295,24 +316,23 @@ class minesweaper{
                 
                 //メイン
                 for(int j = 0; j < size; j++){
-                    char icon;
                     if(display_board[i][j] == 0){
-                        std::cout << ' ' << '-' <<  ' ';
+                        std::cout << " - ";
                     }
                     else if(display_board[i][j] < 9){
                         std::cout << ' ' << display_board[i][j] << ' ';
                     }
                     else if(display_board[i][j] == mine){
-                        std::cout << '|' << 'M' << '|';
+                        std::cout << "|M|";
                     }
                     else if(display_board[i][j] == cover){
-                        std::cout << '|' << '_' << '|';
+                        std::cout << "|_|";
                     }
                     else if(display_board[i][j] == frag){
-                        std::cout << '|' << 'F' << '|';
+                        std::cout << "|F|";
                     }
                     else{
-                        std::cout << '|' << 'X' << '|';
+                        std::cout << "|X|";
                     }
 
                 }
@@ -327,18 +347,13 @@ class minesweaper{
 //零号機
 class minebot : public minesweaper{
   public:
-    int X;
-    int Y;
     int around_mine_num;
     int around_frag_num;
     int around_cover_num;
-
     
     minebot()
     {
     }
-
-
 
     //フラグを立てる
     bool put_frag(int x, int y){
@@ -455,7 +470,7 @@ class minebot1:public minesweaper{
         //all_patternの生成
         all_pattern.resize(9);
 
-        for(int bit256 = 0; bit256 < 256; bit256++){
+        for(int bit256 = 0; bit256 < 256; bit256++){//2^8のパターンを二進数で
             int mine_count = 0;
             int t = 1;
             mine_pattern = mine_pattern_clear;
@@ -470,12 +485,10 @@ class minebot1:public minesweaper{
             all_pattern[mine_count].push_back(mine_pattern);
         }
     }
-    bool hanni3x3(int x, int y){
+
+    bool hanni3x3(int x, int y){//範囲確認
         return 0 <= x && x < 3 && 0 <= y && y < 3;
     }
-
-    
-
 
     void first_analysis(int x, int y){//あり得る地雷の配置
         around_mine_num = display_board[x][y];
@@ -581,11 +594,12 @@ class minebot1:public minesweaper{
             return false;
         }
 
-        std::vector<std::vector<bool>> possible_frag(3, std::vector<bool>(3, true));
+        std::vector<std::vector<bool>> possible_frag(3, std::vector<bool>(3, true));//フラグを置く位置
+
         for(int i = 0; i < pattern_num; i++){
             mine_pattern = all_pattern[display_board[x][y]][possible_pattern[x][y][i]];
 
-            for(int j = 0; j < 3; j++){
+            for(int j = 0; j < 3; j++){//すべてのパターンで地雷がある場合フラグを置く
                 for(int k = 0; k < 3; k++){
                     possible_frag[j][k] = possible_frag[j][k] && mine_pattern[j][k];
                 }
@@ -598,7 +612,7 @@ class minebot1:public minesweaper{
 
             int nx = 1 + dxs[i];
             int ny = 1 + dys[i];
-            if(hanni(mx, my) && possible_frag[nx][ny] && display_board[mx][my] == cover){
+            if(hanni(mx, my) && possible_frag[nx][ny] && display_board[mx][my] == cover){//フラグを置く
                 actionfunc(mx, my, 1);
                 changed = true;
             }
@@ -621,7 +635,7 @@ class minebot1:public minesweaper{
 
         std::vector<std::vector<bool>> possible_mine(3, std::vector<bool>(3, false));
 
-        for(int i = 0; i < pattern_num; i++){
+        for(int i = 0; i < pattern_num; i++){//すべてのパターンで地雷のがおかれない場所を開ける。
             mine_pattern = all_pattern[display_board[x][y]][possible_pattern[x][y][i]];
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < 3; k++){
@@ -650,18 +664,19 @@ class minebot1:public minesweaper{
 
     bool autoscan(){
         bool changed = false;
+        //分析一回目
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
                 first_analysis(i, j);
             }
         }
-
+        //分析二回目
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
                 second_analysis(i, j);
             }
         }
-
+        //フラグを置く
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
                 if(put_frag(i, j)){
@@ -672,7 +687,7 @@ class minebot1:public minesweaper{
                 }
             }
         }
-
+        //開ける
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
                 if(open_cover(i, j)){
@@ -696,7 +711,7 @@ class minebot1:public minesweaper{
         return changed;
     }
 
-    bool autogamble(){
+    bool autogamble(){//論理的(フラグの総数を考えずに)に開けない場合左上のほうから開ける　フラグがあとひとつであればできそう？
         bool changed = false;
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
@@ -735,12 +750,12 @@ void playergame(){
     while(running){
         std::cin >> x >> y >> act;
         game.actionfunc(x, y, act);
-        if(game.was_exploded()){
+        if(game.is_exploded()){
             running = false;
             result = false;
             break;
         }
-        if(game.was_cleared()){
+        if(game.is_cleared()){
             running = false;
             result = true;
             break;
@@ -770,11 +785,11 @@ void botgame(){
         changed = false;
         changed = game.autoscan();
 
-        if(game.was_exploded()){
+        if(game.is_exploded()){
             running = false;
             result = false;
         }
-        if(game.was_cleared()){
+        if(game.is_cleared()){
             running = false;
             result = true; 
         }
@@ -796,19 +811,23 @@ void botgame1(){
     minebot1 game;
 
     game.placemines(game.size/2, game.size/2);
+    game.mine_display();
     game.display();
+    Sleep(2500);
 
     bool running = true;
     bool changed = false;
     bool  result = false;//勝敗
     while(running){
-        if(game.was_exploded()){
+        if(game.is_exploded()){
             running = false;
             result = false;
+            break;
         }
-        if(game.was_cleared()){
+        if(game.is_cleared()){
             running = false;
             result = true; 
+            break;
         }
         
         changed = false;
