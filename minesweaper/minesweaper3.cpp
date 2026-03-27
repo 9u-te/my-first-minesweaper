@@ -43,10 +43,37 @@ class minesweaper{
             frag_num = mine_num;
         }
 
+        void mine_display(){//地雷の位置公開！！
+            std::cout << frag_num << "/" <<  mine_num << std::endl;
+            
+            //列番号
+            std::cout << "x\\y";
+            for(int i = 0; i < size; i++){
+                std::cout << (i < 10 ? "|" : "") << i << '|';
+            }
+            std::cout << std::endl;
+
+            for(int i = 0; i < size; i++){
+                //行番号
+                std::cout << (i < 10 ? "  " : " ") << i;
+                
+                //メイン
+                for(int j = 0; j < size; j++){
+                    if(mine_board[i][j]){
+                        std::cout << '|' << 'M' << '|';
+                    }
+                    else{
+                        std::cout << ' ' << '-' <<  ' ';
+                    }
+                }
+                std::cout << std::endl;
+            }
+
+        }
 
 
     
-        bool hanni(int x, int y){
+        bool hanni(int x, int y){//範囲確認
             return 0 <= x && x < size && 0 <= y && y < size;
         }
 
@@ -295,7 +322,6 @@ class minesweaper{
                 
                 //メイン
                 for(int j = 0; j < size; j++){
-                    char icon;
                     if(display_board[i][j] == 0){
                         std::cout << ' ' << '-' <<  ' ';
                     }
@@ -470,12 +496,10 @@ class minebot1:public minesweaper{
             all_pattern[mine_count].push_back(mine_pattern);
         }
     }
-    bool hanni3x3(int x, int y){
+
+    bool hanni3x3(int x, int y){//範囲確認
         return 0 <= x && x < 3 && 0 <= y && y < 3;
     }
-
-    
-
 
     void first_analysis(int x, int y){//あり得る地雷の配置
         around_mine_num = display_board[x][y];
@@ -796,7 +820,9 @@ void botgame1(){
     minebot1 game;
 
     game.placemines(game.size/2, game.size/2);
+    game.mine_display();
     game.display();
+    Sleep(2500);
 
     bool running = true;
     bool changed = false;
