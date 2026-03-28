@@ -683,7 +683,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " frag" << std::endl << std::endl;
                     changed = true;
-                    Sleep(500);
+                    //Sleep(500);
                 }
             }
         }
@@ -694,7 +694,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " open" << std::endl << std::endl;
                     changed = true;
-                    Sleep(500);
+                    //Sleep(500);
                 }
             }
         }
@@ -719,7 +719,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " GAMBLEGAMBLEGAMBLEGAMBLE" << std::endl << std::endl;
                     changed = true;
-                    Sleep(500);
+                    //Sleep(500);
                     return changed;
                 }
             }
@@ -813,7 +813,7 @@ void botgame1(){
     game.placemines(game.size/2, game.size/2);
     game.mine_display();
     game.display();
-    Sleep(2500);
+    //Sleep(2500);
 
     bool running = true;
     bool changed = false;
