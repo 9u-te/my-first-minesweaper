@@ -58,10 +58,10 @@ class minesweaper{
                 //メイン
                 for(int j = 0; j < size; j++){
                     if(mine_board[i][j]){
-                        std::cout << '|' << 'M' << '|';
+                        std::cout << "M";
                     }
                     else{
-                        std::cout << ' ' << '-' <<  ' ';
+                        std::cout << " - ";
                     }
                 }
                 std::cout << std::endl;
@@ -323,7 +323,7 @@ class minesweaper{
                         std::cout << ' ' << display_board[i][j] << ' ';
                     }
                     else if(display_board[i][j] == mine){
-                        std::cout << "|M|";
+                        std::cout << " M ";
                     }
                     else if(display_board[i][j] == cover){
                         std::cout << "|_|";
@@ -683,7 +683,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " frag" << std::endl << std::endl;
                     changed = true;
-                    //Sleep(500);
+                    Sleep(250);
                 }
             }
         }
@@ -694,7 +694,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " open" << std::endl << std::endl;
                     changed = true;
-                    //Sleep(500);
+                    Sleep(250);
                 }
             }
         }
@@ -719,7 +719,7 @@ class minebot1:public minesweaper{
                     display();
                     std::cout << i << " " << j << " GAMBLEGAMBLEGAMBLEGAMBLE" << std::endl << std::endl;
                     changed = true;
-                    //Sleep(500);
+                    Sleep(250);
                     return changed;
                 }
             }
